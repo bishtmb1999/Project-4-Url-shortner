@@ -1,5 +1,5 @@
 const urlModel = require("../models/urlModel");
-const isValidURL = require("valid-url")
+const validURL = require("valid-url")
 let shortid = require("shortid")
 
 const validateRequest = function (value) {
@@ -11,12 +11,12 @@ const validateRequest = function (value) {
 //     let regex = (/(ftp|http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?/)
 //     return regex.test(myURL)
 // }
-// const isValidUrl = (url) => {
-//     if (/(ftp|http|https|FTP|HTTP|HTTPS):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-/]))?/.test(url.trim()))
-//         return true
-//     else
-//         return false
-// }
+const isValidURL = (url) => {
+    if (/(ftp|http|https|FTP|HTTP|HTTPS):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-/]))?/.test(url.trim()))
+        return true
+    else
+        return false
+}
 const validateString = function (name) {
     if (typeof name == undefined || typeof name == null) return false;
     if (typeof name == "string" && name.trim().length == 0) return false;
@@ -32,7 +32,7 @@ let createShortUrl = async function (req, res) {
         }
        
         if (!longUrl) { return res.status(400).send({ status: false, message: "please provide longUrl" }) }
-        if (!isValidURL.isUri(longUrl)) { return res.status(400).send({ status: false, message: "please provide a valid url" }) }
+        if (!isValidURL(longUrl)) { return res.status(400).send({ status: false, message: "please provide a valid url" }) }
         let longUrlData = await urlModel.findOne({ longUrl: longUrl }).select({_id:0,__v:0})
         
         if(longUrlData){

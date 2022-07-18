@@ -34,7 +34,7 @@ let createShortUrl = async function (req, res) {
         if (!longUrl) { return res.status(400).send({ status: false, message: "please provide longUrl" }) }
         if (!validURL(longUrl)) { return res.status(400).send({ status: false, message: "please provide a valid url" }) }
         let duplicateLongUrl = await urlModel.findOne({ longUrl: longUrl })
-        if (duplicateLongUrl) { return res.status(400).send({ status: false, message: "this url already exists" ,data:duplicateLongUrl}) }
+        if (duplicateLongUrl) { return res.status(400).send({ status: false, message: "this url already exists"}) }
         obj.longUrl = longUrl
 
         obj.shortUrl = `http://localhost:3000/${obj.urlCode}`

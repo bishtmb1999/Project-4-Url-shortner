@@ -26,7 +26,7 @@ const validateString = function (name) {
 let createShortUrl = async function (req, res) {
     try {
         let bodyData = req.body
-        let { longUrl } = bodyData
+        let { longUrl,urlCode,shortUrl } = bodyData
         if (!validateRequest(bodyData)) {
             return res.status(400).send({ status: false, message: "please provide data in body" })
         }
@@ -34,15 +34,17 @@ let createShortUrl = async function (req, res) {
         if (!longUrl) { return res.status(400).send({ status: false, message: "please provide longUrl" }) }
         if (!isValidURL.isUri(longUrl)) { return res.status(400).send({ status: false, message: "please provide a valid url" }) }
         let longUrlData = await urlModel.findOne({ longUrl: longUrl }).select({_id:0,__v:0})
-        console.log(longUrlData)
-        if(longUrlData){
-            return res.status(200).send({status:true,data:longUrlData})
-        }
-        let urlCode=shortid.generate(longUrl)
-        let shortUrl=`http://localhost:3000/${urlCode}`
-        let data=await urlModel.create({longUrl:longUrl,urlCode:urlCode,shortUrl:shortUrl})
         
-        return res.status(201).send({status:true, data:data})
+        if(longUrlData){
+            return res.status(200).send({status:true,message:"url already exists",data:longUrlData})
+        }
+        if(!urlCode) {urlCode=shortid.generate(longUrl)}
+
+        if(!shortUrl) shortUrl=`http://localhost:3000/${urlCode}`
+        let data=await urlModel.create({longUrl:longUrl,urlCode:urlCode,shortUrl:shortUrl})
+        let responseData=await urlModel.findOne({longUrl:longUrl,urlCode:urlCode,shortUrl:shortUrl}).select({_id:0,__v:0})
+        
+        return res.status(201).send({status:true, data:responseData})
     
     }
     catch (err) {

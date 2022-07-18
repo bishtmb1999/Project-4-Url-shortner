@@ -40,7 +40,8 @@ let createShortUrl = async function (req, res) {
         obj.shortUrl = `http://localhost:3000/${obj.urlCode}`
 
         let data = await urlModel.create(obj)
-        res.status(201).send({ status: true, message: "Success", data: data })
+        let responseData = await urlModel.findOne(obj).select({ __v: 0, _id: 0, createdAt: 0, updatedAt: 0})
+        res.status(201).send({ status: true, message: "Success", data: responseData })
     }
     catch (err) {
        return res.status(500).send({ status: false, message: err })

@@ -1,9 +1,10 @@
 let mongoose = require("mongoose")
 let shortid=require("shortid")
 let urlSchema = new mongoose.Schema({
-    urlCode: {type:String, required:true, unique:true, lowercase:true, trim:true }, 
+   
     longUrl: {type:String,required:true}, 
-    shortUrl: {type:String,required:true, unique:true}
+    shortUrl: {type:String,required:true, unique:true},
+    urlCode: {type:String, required:true, unique:true, lowercase:true, trim:true }
 },
     { timestamps: true })
 module.exports = mongoose.model('Url', urlSchema)

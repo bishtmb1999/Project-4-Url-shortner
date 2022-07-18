@@ -1,15 +1,22 @@
 const urlModel = require("../models/urlModel");
-// const validUrl = require("valid-url")
+const isValidURL = require("valid-url")
 let shortid = require("shortid")
+
 const validateRequest = function (value) {
     if (Object.keys(value).length == 0) {
         return false;
     } else return true;
 };
-function validURL(myURL) {
-    let regex = (/(ftp|http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?/)
-    return regex.test(myURL)
-}
+// function validURL(myURL) {
+//     let regex = (/(ftp|http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?/)
+//     return regex.test(myURL)
+// }
+// const isValidUrl = (url) => {
+//     if (/(ftp|http|https|FTP|HTTP|HTTPS):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-/]))?/.test(url.trim()))
+//         return true
+//     else
+//         return false
+// }
 const validateString = function (name) {
     if (typeof name == undefined || typeof name == null) return false;
     if (typeof name == "string" && name.trim().length == 0) return false;
@@ -19,35 +26,30 @@ const validateString = function (name) {
 let createShortUrl = async function (req, res) {
     try {
         let bodyData = req.body
-        let { urlCode, longUrl } = bodyData
+        let { longUrl } = bodyData
         if (!validateRequest(bodyData)) {
             return res.status(400).send({ status: false, message: "please provide data in body" })
         }
-        let obj = {}
-        if (!urlCode) { obj.urlCode = shortid.generate() }
-        
-
-        let duplicateUrlCode = await urlModel.findOne({ urlCode: urlCode })
-        if (duplicateUrlCode) { return res.status(400).send({ status: false, message: "this urlCode already exists" }) }
-        if (urlCode) { obj.urlCode = urlCode }
-        
+       
         if (!longUrl) { return res.status(400).send({ status: false, message: "please provide longUrl" }) }
-        if (!validURL(longUrl)) { return res.status(400).send({ status: false, message: "please provide a valid url" }) }
-        let duplicateLongUrl = await urlModel.findOne({ longUrl: longUrl })
-        if (duplicateLongUrl) { return res.status(400).send({ status: false, message: "this url already exists"}) }
-        obj.longUrl = longUrl
-
-        obj.shortUrl = `http://localhost:3000/${obj.urlCode}`
-
-        let data = await urlModel.create(obj)
-        let responseData = await urlModel.findOne(obj).select({ __v: 0, _id: 0, createdAt: 0, updatedAt: 0})
-        res.status(201).send({ status: true, message: "Success", data: responseData })
+        if (!isValidURL.isUri(longUrl)) { return res.status(400).send({ status: false, message: "please provide a valid url" }) }
+        let longUrlData = await urlModel.findOne({ longUrl: longUrl }).select({_id:0,__v:0})
+        console.log(longUrlData)
+        if(longUrlData){
+            return res.status(200).send({status:true,data:longUrlData})
+        }
+        let urlCode=shortid.generate(longUrl)
+        let shortUrl=`http://localhost:3000/${urlCode}`
+        let data=await urlModel.create({longUrl:longUrl,urlCode:urlCode,shortUrl:shortUrl})
+        
+        return res.status(201).send({status:true, data:data})
+    
     }
     catch (err) {
        return res.status(500).send({ status: false, message: err })
     }
 }
-let getShortUrl = async function (req, res) {
+let getUrl = async function (req, res) {
     try {
         let urlCode = req.params.urlCode
 
@@ -64,4 +66,4 @@ let getShortUrl = async function (req, res) {
     }
 
 }
-module.exports = { createShortUrl, getShortUrl }
+module.exports = { createShortUrl, getUrl }

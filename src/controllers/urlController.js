@@ -38,7 +38,7 @@ let createShortUrl = async function (req, res) {
         if(longUrlData){
             return res.status(200).send({status:true,message:"url already exists",data:longUrlData})
         }
-        let urlCode=shortid.generate(longUrl)}
+        let urlCode=shortid.generate(longUrl)
 
          let shortUrl=`http://localhost:3000/${urlCode}`
         let data=await urlModel.create({longUrl:longUrl,urlCode:urlCode,shortUrl:shortUrl})

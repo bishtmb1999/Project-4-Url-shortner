@@ -26,7 +26,7 @@ const validateString = function (name) {
 let createShortUrl = async function (req, res) {
     try {
         let bodyData = req.body
-        let { longUrl,urlCode } = bodyData
+        let { longUrl } = bodyData
         if (!validateRequest(bodyData)) {
             return res.status(400).send({ status: false, message: "please provide data in body" })
         }
@@ -38,7 +38,7 @@ let createShortUrl = async function (req, res) {
         if(longUrlData){
             return res.status(200).send({status:true,message:"url already exists",data:longUrlData})
         }
-        if(!urlCode) {urlCode=shortid.generate(longUrl)}
+        let urlCode=shortid.generate(longUrl)}
 
          let shortUrl=`http://localhost:3000/${urlCode}`
         let data=await urlModel.create({longUrl:longUrl,urlCode:urlCode,shortUrl:shortUrl})

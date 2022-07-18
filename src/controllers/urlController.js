@@ -25,7 +25,7 @@ let createShortUrl = async function (req, res) {
         }
         let obj = {}
         if (!urlCode) { obj.urlCode = shortid.generate() }
-        if (!validateString(urlCode)) { obj.urlCode = shortid.generate() }
+        
 
         let duplicateUrlCode = await urlModel.findOne({ urlCode: urlCode })
         if (duplicateUrlCode) { return res.status(400).send({ status: false, message: "this urlCode already exists" }) }

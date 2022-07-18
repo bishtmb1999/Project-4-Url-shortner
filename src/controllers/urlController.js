@@ -26,7 +26,7 @@ const validateString = function (name) {
 let createShortUrl = async function (req, res) {
     try {
         let bodyData = req.body
-        let { longUrl,urlCode,shortUrl } = bodyData
+        let { longUrl,urlCode } = bodyData
         if (!validateRequest(bodyData)) {
             return res.status(400).send({ status: false, message: "please provide data in body" })
         }
@@ -40,7 +40,7 @@ let createShortUrl = async function (req, res) {
         }
         if(!urlCode) {urlCode=shortid.generate(longUrl)}
 
-        if(!shortUrl) shortUrl=`http://localhost:3000/${urlCode}`
+         let shortUrl=`http://localhost:3000/${urlCode}`
         let data=await urlModel.create({longUrl:longUrl,urlCode:urlCode,shortUrl:shortUrl})
         let responseData=await urlModel.findOne({longUrl:longUrl,urlCode:urlCode,shortUrl:shortUrl}).select({_id:0,__v:0})
         

@@ -36,7 +36,7 @@ let createShortUrl = async function (req, res) {
         let longUrlData = await urlModel.findOne({ longUrl: longUrl }).select({_id:0,__v:0})
         
         if(longUrlData){
-            return res.status(200).send({status:true,message:"url already exists",data:longUrlData})
+            return res.status(200).send({status:true,data:longUrlData})
         }
         let urlCode=shortid.generate(longUrl)
 

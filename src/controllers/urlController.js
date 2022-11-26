@@ -23,6 +23,23 @@ const validateString = function (name) {
 
     return true;
 };
+let urlFound = false;
+
+    let object = {
+      method: "get",
+      url: longUrl,
+    };
+    await axios(object)
+      .then((res) => {
+        if (res.status == 201 || res.status == 200) urlFound = true;
+      })
+      .catch((err) => {});
+
+    if (urlFound == false) {
+      return res.status(400).send({ status: false, message: "Invalid URL" });
+    }
+
+
 const redis = require("redis");
 
 const { promisify } = require("util");
